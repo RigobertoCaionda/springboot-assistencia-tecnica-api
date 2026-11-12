@@ -1,0 +1,15 @@
+package app.vercel.rigobertocaionda.assistencia_tecnica.controller;
+
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
+
+public interface GenericController {
+    default URI gerarHeaderLocation(Long id) {
+        return ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(id)
+                .toUri();
+    };
+}
