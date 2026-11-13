@@ -91,4 +91,8 @@ public class EquipamentoService {
 
         return repository.save(equipamentoEncontrado);
     }
+
+    public void delete(Long id) {
+        repository.deleteById(id);
+    }
 }

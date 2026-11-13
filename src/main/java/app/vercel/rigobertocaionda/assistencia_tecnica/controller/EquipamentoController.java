@@ -64,4 +64,10 @@ public class EquipamentoController implements GenericController {
         Equipamento equipamento = service.update(id, dto);
         return ResponseEntity.ok(mapper.toDTO(equipamento));
     }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> destroy(@PathVariable("id") Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }
