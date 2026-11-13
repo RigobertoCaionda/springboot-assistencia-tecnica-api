@@ -74,4 +74,21 @@ public class EquipamentoService {
 
         return specs;
     }
+
+    public Equipamento update(Long id, EquipamentoDTO dto) {
+        if (id == null) {
+            throw new IllegalArgumentException("Para atualizar um registo precisa enviar ID.");
+        }
+
+        Equipamento equipamentoEncontrado = findOne(id);
+
+        mapper.updateEntity(dto, equipamentoEncontrado); // Isso evita você ter que preencher cada dado a ser atualizado individualmente
+
+        Cliente cliente = clienteService.findOne(dto.clienteId());
+        equipamentoEncontrado.setCliente(cliente);
+
+        validator.validar(equipamentoEncontrado);
+
+        return repository.save(equipamentoEncontrado);
+    }
 }

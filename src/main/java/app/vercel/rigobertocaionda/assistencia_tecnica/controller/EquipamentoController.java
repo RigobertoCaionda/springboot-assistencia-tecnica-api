@@ -58,4 +58,10 @@ public class EquipamentoController implements GenericController {
         Equipamento equipamento = service.findOne(id);
         return ResponseEntity.ok(mapper.toDTO(equipamento));
     }
+
+    @PutMapping("{id}")
+    public ResponseEntity<EquipamentoResponseDTO> update(@PathVariable("id") Long id, @RequestBody @Valid EquipamentoDTO dto) {
+        Equipamento equipamento = service.update(id, dto);
+        return ResponseEntity.ok(mapper.toDTO(equipamento));
+    }
 }
