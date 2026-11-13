@@ -8,6 +8,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "clientes")
@@ -37,4 +38,7 @@ public class Cliente {
     @Column(name = "data_atualizacao", nullable = false)
     @LastModifiedDate
     private LocalDateTime dataAtualizacao;
+
+    @OneToMany(mappedBy = "cliente")
+    private List<Equipamento> equipamentos;
 }
