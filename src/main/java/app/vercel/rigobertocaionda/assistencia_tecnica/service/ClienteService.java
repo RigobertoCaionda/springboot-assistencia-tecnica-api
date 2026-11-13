@@ -1,5 +1,7 @@
 package app.vercel.rigobertocaionda.assistencia_tecnica.service;
 
+import app.vercel.rigobertocaionda.assistencia_tecnica.controller.dto.ClienteFiltroDTO;
+import app.vercel.rigobertocaionda.assistencia_tecnica.exceptions.NotFoundException;
 import app.vercel.rigobertocaionda.assistencia_tecnica.model.Cliente;
 import app.vercel.rigobertocaionda.assistencia_tecnica.repository.ClienteRepository;
 import static app.vercel.rigobertocaionda.assistencia_tecnica.repository.ClienteSpecs.*;
@@ -11,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,25 +28,52 @@ public class ClienteService {
         return repository.save(cliente);
     }
 
+    public void delete(Long id) {
+        repository.deleteById(id);
+    }
+
+    public Cliente update(Cliente cliente) {
+        if (cliente.getId() == null) {
+            throw new IllegalArgumentException("Para atualizar um registo, deve existir id.");
+        }
+
+        Cliente clienteEncontrado = this.findOne(cliente.getId());
+        validator.validar(cliente);
+        clienteEncontrado.setNome(cliente.getNome());
+        clienteEncontrado.setEmail(cliente.getEmail());
+        clienteEncontrado.setTelefone(cliente.getTelefone());
+
+        return repository.save(clienteEncontrado);
+    }
+
+    public Cliente findOne(Long id) {
+        return repository.findById(id).orElseThrow(() -> new NotFoundException("Cliente não encontrado."));
+    }
+
     public Page<Cliente> query(
-            Integer page,
-            Integer size,
-            String sortBy,
-            Sort.Direction direction,
-            String name,
-            String email
+            ClienteFiltroDTO filtros,
+            Pageable pageable,
+            boolean withPagination
     ) {
-        Specification<Cliente> specs = Specification.where((root, query, cb) -> cb.conjunction());
+        Specification<Cliente> specs = buildSpecification(filtros);
 
-        if (name != null) {
-            specs = specs.and(nomeLike(name));
+        Pageable pageableRequest = withPagination ? pageable : Pageable.unpaged(pageable.getSort());
+
+        return repository.findAll(specs, pageableRequest);
+    }
+
+    private Specification<Cliente> buildSpecification(ClienteFiltroDTO filtros) {
+        Specification<Cliente> specs =
+                Specification.where((root, query, cb) -> cb.conjunction());
+
+        if (filtros.name() != null) {
+            specs = specs.and(nomeLike(filtros.name()));
         }
 
-        if (email != null) {
-            specs = specs.and(isEmailEqual(email));
+        if (filtros.email() != null) {
+            specs = specs.and(isEmailEqual(filtros.email()));
         }
 
-        Pageable pageRequest = PageRequest.of(page, size, Sort.by(direction, sortBy)); // Além da paginação, adicionamos a ordenação
-        return repository.findAll(specs, pageRequest);
+        return specs;
     }
 }
