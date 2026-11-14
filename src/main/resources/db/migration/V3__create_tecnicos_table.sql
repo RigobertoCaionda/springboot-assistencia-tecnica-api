@@ -1,0 +1,7 @@
+CREATE TABLE tecnicos (
+      id BIGINT AUTO_INCREMENT PRIMARY KEY,
+      nome VARCHAR(150) NOT NULL,
+      email VARCHAR(150) NOT NULL UNIQUE,
+      especialidade VARCHAR(100) NOT NULL,
+      ativo BOOLEAN NOT NULL DEFAULT TRUE
+);

@@ -2,6 +2,7 @@ package app.vercel.rigobertocaionda.assistencia_tecnica.controller.common;
 
 import app.vercel.rigobertocaionda.assistencia_tecnica.controller.dto.ErroCampo;
 import app.vercel.rigobertocaionda.assistencia_tecnica.controller.dto.ErroResposta;
+import app.vercel.rigobertocaionda.assistencia_tecnica.exceptions.BusinessException;
 import app.vercel.rigobertocaionda.assistencia_tecnica.exceptions.NotFoundException;
 import app.vercel.rigobertocaionda.assistencia_tecnica.exceptions.RegistoDuplicadoException;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RegistoDuplicadoException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErroResposta handleRegistoDuplicadoException(RegistoDuplicadoException e) {
+        return ErroResposta.conflito(e.getMessage());
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErroResposta handleBusinessException(BusinessException e) {
         return ErroResposta.conflito(e.getMessage());
     }
 

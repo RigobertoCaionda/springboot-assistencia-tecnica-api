@@ -3,6 +3,7 @@ package app.vercel.rigobertocaionda.assistencia_tecnica.service;
 import app.vercel.rigobertocaionda.assistencia_tecnica.controller.dto.EquipamentoDTO;
 import app.vercel.rigobertocaionda.assistencia_tecnica.controller.dto.EquipamentoFiltroDTO;
 import app.vercel.rigobertocaionda.assistencia_tecnica.controller.mapper.EquipamentoMapper;
+import app.vercel.rigobertocaionda.assistencia_tecnica.exceptions.BusinessException;
 import app.vercel.rigobertocaionda.assistencia_tecnica.exceptions.NotFoundException;
 import app.vercel.rigobertocaionda.assistencia_tecnica.model.Cliente;
 import app.vercel.rigobertocaionda.assistencia_tecnica.model.Equipamento;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static app.vercel.rigobertocaionda.assistencia_tecnica.repository.EquipamentoSpecs.*;
 
@@ -92,7 +94,12 @@ public class EquipamentoService {
         return repository.save(equipamentoEncontrado);
     }
 
+    @Transactional // Utilizar Transactional em todos os métodos de escrita é uma convenção. Deve se usar transaction em todos os métodos que fazem mais de uma consulta a base de dados e por convenção, usa-se nos métodos de escrita
     public void delete(Long id) {
+        Equipamento equipamento = this.findOne(id);
+        if (!equipamento.getOrdemServicos().isEmpty()) {
+            throw new BusinessException("Não é possível eliminar este equipamento porque possui ordem de serviço associado.");
+        }
         repository.deleteById(id);
     }
 }
