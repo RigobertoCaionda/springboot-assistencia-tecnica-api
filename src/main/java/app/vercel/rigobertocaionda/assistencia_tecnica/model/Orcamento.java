@@ -25,10 +25,10 @@ public class Orcamento {
     @Column(name = "valor_mao_obras", nullable = false, precision = 12, scale = 2)
     private BigDecimal valorMaoObras;
 
-    @Column(name = "valor_pecas", nullable = false, precision = 12, scale = 2)
+    @Column(name = "valor_pecas", precision = 12, scale = 2)
     private BigDecimal valorPecas;
 
-    @Column(name = "valor_total", nullable = false, precision = 12, scale = 2)
+    @Column(name = "valor_total", precision = 12, scale = 2)
     private BigDecimal valorTotal;
 
     @Column(name = "prioridade", nullable = false)
