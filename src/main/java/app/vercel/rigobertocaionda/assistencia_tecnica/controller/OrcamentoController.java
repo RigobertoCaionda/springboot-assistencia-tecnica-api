@@ -47,4 +47,10 @@ public class OrcamentoController {
         ItemOrcamento itemOrcamento = itemOrcamentoService.execute(id, dto);
         return ResponseEntity.ok(itemOrcamentoMapper.toDTO(itemOrcamento));
     }
+
+    @DeleteMapping("{id}/itens")
+    public ResponseEntity<Void> deletarPecas(@PathVariable("id") Long id, @RequestParam Long itemId) {
+        itemOrcamentoService.delete(itemId, id);
+        return ResponseEntity.noContent().build();
+    }
 }
