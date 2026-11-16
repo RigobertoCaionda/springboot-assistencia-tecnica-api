@@ -12,8 +12,6 @@ public record PagamentoDTO(
         @DecimalMin(value = "0.01", message = "O valor deve ser superior a zero.")
         BigDecimal valor,
         @NotNull(message = "Método de pagamento é obrigatório.")
-        MetodoPagamento metodoPagamento,
-        @NotNull(message = "Orçamento é obrigatório.")
-        Long orcamentoId
+        MetodoPagamento metodoPagamento
 ) {
 }

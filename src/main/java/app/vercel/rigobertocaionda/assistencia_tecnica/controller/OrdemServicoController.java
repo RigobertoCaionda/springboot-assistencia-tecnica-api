@@ -3,13 +3,15 @@ package app.vercel.rigobertocaionda.assistencia_tecnica.controller;
 import app.vercel.rigobertocaionda.assistencia_tecnica.controller.dto.*;
 import app.vercel.rigobertocaionda.assistencia_tecnica.controller.mapper.OrcamentoMapper;
 import app.vercel.rigobertocaionda.assistencia_tecnica.controller.mapper.OrdemServicoMapper;
+import app.vercel.rigobertocaionda.assistencia_tecnica.controller.mapper.PagamentoMapper;
 import app.vercel.rigobertocaionda.assistencia_tecnica.model.Orcamento;
 import app.vercel.rigobertocaionda.assistencia_tecnica.model.OrdemServico;
+import app.vercel.rigobertocaionda.assistencia_tecnica.model.Pagamento;
 import app.vercel.rigobertocaionda.assistencia_tecnica.service.OrcamentoService;
 import app.vercel.rigobertocaionda.assistencia_tecnica.service.OrdemServicoService;
+import app.vercel.rigobertocaionda.assistencia_tecnica.service.PagamentoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -18,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,6 +32,8 @@ public class OrdemServicoController implements GenericController {
     private final OrdemServicoMapper mapper;
     private final OrcamentoService orcamentoService;
     private final OrcamentoMapper orcamentoMapper;
+    private final PagamentoService pagamentoService;
+    private final PagamentoMapper pagamentoMapper;
 
     @PostMapping
     public ResponseEntity<OrdemServicoResponseDTO> store(@RequestBody @Valid OrdemServicoDTO dto) {
@@ -94,4 +100,19 @@ public class OrdemServicoController implements GenericController {
         URI location = gerarHeaderLocation(orcamento.getId());
         return ResponseEntity.created(location).body(orcamentoMapper.toDTO(orcamento));
     }
+
+    @PostMapping("{id}/pagamentos")
+    public ResponseEntity<Void> efetuarPagamento(@PathVariable("id") Long orcamentoId, @RequestBody @Valid PagamentoDTO dto) {
+        pagamentoService.execute(orcamentoId, dto);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("{id}/pagamentos")
+    public ResponseEntity<List<PagamentoResponseDTO>> getOrdemServicoPagamentos(@PathVariable("id") Long id) {
+        List<Pagamento> pagamentos = pagamentoService.getOrdemServicoPagamentos(id);
+
+        List<PagamentoResponseDTO> pagamentosList = pagamentos.stream().map(pagamentoMapper::toDTO).collect(Collectors.toList());
+        return ResponseEntity.ok(pagamentosList);
+    }
+
 }

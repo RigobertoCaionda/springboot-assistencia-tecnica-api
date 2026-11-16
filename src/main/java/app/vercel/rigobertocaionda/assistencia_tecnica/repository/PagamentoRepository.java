@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface PagamentoRepository extends JpaRepository<Pagamento, Long> {
     List<Pagamento> findByOrcamentoId(Long orcamentoId);
+    List<Pagamento> findByOrcamentoOrdemServicoId(Long ordemServicoId); // Acha por orcamento.ordem_servico.id
 }
